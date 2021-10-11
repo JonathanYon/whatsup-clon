@@ -13,7 +13,9 @@ const UsersSchema = new Schema(
       default: "https://bit.ly/3lBk8d3",
     },
     password: { type: String, required: true },
+    refreshT: {type: String}
   },
+  
   { timestamps: true }
 );
 
