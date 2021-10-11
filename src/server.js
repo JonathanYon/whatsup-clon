@@ -4,25 +4,25 @@ import listEndpoints from "express-list-endpoints";
 import mongoose from "mongoose";
 
 const server = express();
-const { PORT, MONGO_CONNECTION_STRING } = process.env;
+const port = process.env.PORT || 3001;
+
+console.log("process---", process.env.MONGOS_CON);
 
 server.use(cors());
 server.use(express.json());
 
 console.log(listEndpoints(server));
 
-server.listen(PORT, async () => {
-  try {
-    await mongoose.connect(MONGO_CONNECTION_STRING, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
-    console.log(`✅ Server is running on ${PORT}  and connected to db`);
-  } catch (error) {
-    console.log("Db connection is failed ", error);
-  }
+mongoose.connect(process.env.MONGOS_CON);
+mongoose.connection.on(`connected`, () => {
+  // the string "connected" 👆☝ has to be "connected" nothing more nothing less
+  console.log(`🎁 mongo connected Successfully!!`);
+  server.listen(port, () => {
+    console.table(listEndpoints(server));
+    console.log(`server running on: ${port}`);
+  });
 });
 
-server.on("error", (error) =>
-  console.log(`❌ Server is not running due to : ${error}`)
-);
+mongoose.connection.on(`error`, (err) => {
+  console.log(`Mongo Error: ${err}`);
+});
