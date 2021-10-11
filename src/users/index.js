@@ -54,5 +54,18 @@ userRouter.put("/me", jwtAuthMiddleware, async (req, res, next) => {
     console.log(error);
   }
 });
+// get single user
+userRouter.get("/:id", jwtAuthMiddleware, async (req, res, next) => {
+  try {
+    const user = await userModel.findById({ _id: req.params.id });
+    if (user) {
+      res.send(user);
+    } else {
+      res.send("the pserson you looking for is not found");
+    }
+  } catch (error) {
+    console.log(error);
+  }
+});
 
 export default userRouter;
