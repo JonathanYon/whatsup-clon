@@ -1,7 +1,7 @@
 import { Router } from "express";
 import userModel from "./schema.js";
-import { jwtAuthMiddleware } from "../auth/token.js";
-import { jwtAuthentication } from "../auth/tools.js";
+import { jwtAuthMiddleware } from "../../auth/token.js";
+import { jwtAuthentication } from "../../auth/tools.js";
 import createHttpError from "http-errors";
 
 const userRouter = Router();

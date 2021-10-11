@@ -4,6 +4,7 @@ const { Schema, model } = mongoose;
 
 const chatSchema = new Schema({
   members: [{ type: Schema.Types.ObjectId, ref: "User" }],
+  avatar: { type: String, default: "https://bit.ly/3lBk8d3" },
   history: {
     type: [
       {

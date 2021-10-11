@@ -2,8 +2,8 @@ import express from "express";
 import cors from "cors";
 import listEndpoints from "express-list-endpoints";
 import mongoose from "mongoose";
-import userRouter from "./users/index.js";
-import chatRouter from "./chatt/index.js";
+import userRouter from "./services/users/index.js";
+import chatRouter from "./services/chatt/index.js";
 
 const server = express();
 const port = process.env.PORT || 3001;

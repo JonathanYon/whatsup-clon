@@ -1,4 +1,4 @@
-import userModel from "../users/schema.js";
+import userModel from "../services/users/schema.js";
 import createHttpError from "http-errors";
 import { verifyToken } from "./tools.js";
 

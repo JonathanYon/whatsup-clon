@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 import createHttpError from "http-errors";
-import userModel from "../users/schema.js";
+import userModel from "../services/users/schema.js";
 
 //access token
 const newToken = (payload) =>
