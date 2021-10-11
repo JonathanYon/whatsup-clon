@@ -17,7 +17,6 @@ const UsersSchema = new Schema(
   { timestamps: true }
 );
 
-export default module("User", UsersSchema);
 //password hashing
 
 UsersSchema.pre("save", async function (next) {
@@ -45,3 +44,17 @@ UsersSchema.methods.toJSON() = function(){
     delete userObj.password
     return userObj
 }
+// compare pass & email to the hashed one
+UsersSchema.statics.checkCredential = async function(email, plainPassword){
+    const user = await this.findOne({email})
+    if (user){
+        const isMatch = await bcrypt.compare(plainPassword, user.password)
+        console.log(isMatch);
+        if (isMatch) return user
+        else null
+    } else {
+        return null
+    }
+}
+
+export default module("User", UsersSchema);
