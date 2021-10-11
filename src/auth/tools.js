@@ -46,7 +46,7 @@ export const jwtAuthentication = async (user) => {
   return { accessToken, refreshToken };
 };
 //verify refresh token
-export const refreshTokenAuth = (refresh) => {
+export const refreshTokenAuth = async (refresh) => {
   try {
     const decodedRefresh = await verifyToken(refresh);
     const user = await userModel.findById(decodedRefresh._id);

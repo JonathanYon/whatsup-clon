@@ -1,7 +1,7 @@
-import mongoose, { model } from "mongoose";
+import mongoose from "mongoose";
 import bcrypt from "bcrypt";
 
-const { Schema, module } = mongoose;
+const { Schema, model } = mongoose;
 
 const UsersSchema = new Schema(
   {
@@ -13,9 +13,9 @@ const UsersSchema = new Schema(
       default: "https://bit.ly/3lBk8d3",
     },
     password: { type: String, required: true },
-    refreshT: {type: String}
+    refreshT: { type: String },
   },
-  
+
   { timestamps: true }
 );
 
@@ -40,23 +40,23 @@ UsersSchema.pre("findOneAndUpdate", async function () {
   }
 });
 // removing password from the get route
-UsersSchema.methods.toJSON() = function(){
-    const userInfo = this
-    const userObj = userInfo.toObject()
-    delete userObj.password
-    return userObj
-}
+UsersSchema.methods.toJSON = function () {
+  const userInfo = this;
+  const userObj = userInfo.toObject();
+  delete userObj.password;
+  return userObj;
+};
 // compare pass & email to the hashed one
-UsersSchema.statics.checkCredential = async function(email, plainPassword){
-    const user = await this.findOne({email})
-    if (user){
-        const isMatch = await bcrypt.compare(plainPassword, user.password)
-        console.log(isMatch);
-        if (isMatch) return user
-        else null
-    } else {
-        return null
-    }
-}
+UsersSchema.statics.checkCredential = async function (email, plainPassword) {
+  const user = await this.findOne({ email });
+  if (user) {
+    const isMatch = await bcrypt.compare(plainPassword, user.password);
+    console.log(isMatch);
+    if (isMatch) return user;
+    else null;
+  } else {
+    return null;
+  }
+};
 
-export default module("User", UsersSchema);
+export default model("User", UsersSchema);
