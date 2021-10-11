@@ -7,4 +7,18 @@ import { jwtAuthMiddleware } from "../auth/token.js";
 
 const chatRouter = Router();
 
+// initiate a chat using POST
+chatRouter.post("/", jwtAuthMiddleware, async (req, res, next) => {
+  try {
+    const { members } = req.body;
+    const chatInitiator = req.user._id;
+    const allmembers = [...members, chatInitiator];
+    const chatRoom = await chatModel.initiateChat(allmembers, chatInitiator);
+    return res.status(200).json(chatRoom);
+  } catch (error) {
+    console.log(error);
+    next();
+  }
+});
+
 export default chatRouter;
