@@ -32,7 +32,7 @@ UsersSchema.pre("save", async function (next) {
 // update logged user info
 UsersSchema.pre("findOneAndUpdate", async function () {
   const update = this.getUpdate();
-  console.log("getUpdate()-->", update);
+  //   console.log("getUpdate()-->", update);
   const { password: plainPassword } = update;
   if (plainPassword) {
     const password = await bcrypt.hash(plainPassword, 11);
@@ -51,7 +51,7 @@ UsersSchema.statics.checkCredential = async function (email, plainPassword) {
   const user = await this.findOne({ email });
   if (user) {
     const isMatch = await bcrypt.compare(plainPassword, user.password);
-    console.log(isMatch);
+    // console.log(isMatch);
     if (isMatch) return user;
     else null;
   } else {
