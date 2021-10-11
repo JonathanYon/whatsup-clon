@@ -33,5 +33,13 @@ userRouter.post("/login", async (req, res, next) => {
     next(createHttpError(401, "Check your login details"));
   }
 });
+// get me
+userRouter.get("/me", jwtAuthMiddleware, async (req, res, next) => {
+  try {
+    res.send(req.user);
+  } catch (error) {
+    console.log(error);
+  }
+});
 
 export default userRouter;
