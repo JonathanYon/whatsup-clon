@@ -41,5 +41,18 @@ userRouter.get("/me", jwtAuthMiddleware, async (req, res, next) => {
     console.log(error);
   }
 });
+// change me
+userRouter.put("/me", jwtAuthMiddleware, async (req, res, next) => {
+  try {
+    const user = await userModel.findByIdAndUpdate(
+      req.user._id,
+      { ...req.body },
+      { new: true }
+    );
+    res.send(user);
+  } catch (error) {
+    console.log(error);
+  }
+});
 
 export default userRouter;
