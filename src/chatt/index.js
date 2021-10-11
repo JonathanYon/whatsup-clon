@@ -20,5 +20,17 @@ chatRouter.post("/", jwtAuthMiddleware, async (req, res, next) => {
     next();
   }
 });
+// GET chat of a user
+chatRouter.get("/", jwtAuthMiddleware, async (req, res, next) => {
+  try {
+    const chat = await chatModel.find({
+      members: req.user._id.toString(),
+    });
+    res.status(200).send(chat);
+  } catch (error) {
+    console.log(error);
+    next();
+  }
+});
 
 export default chatRouter;
