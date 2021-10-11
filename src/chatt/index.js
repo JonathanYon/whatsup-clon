@@ -20,13 +20,29 @@ chatRouter.post("/", jwtAuthMiddleware, async (req, res, next) => {
     next();
   }
 });
-// GET chat of a user
+// GET all my chat
 chatRouter.get("/", jwtAuthMiddleware, async (req, res, next) => {
   try {
     const chat = await chatModel.find({
       members: req.user._id.toString(),
     });
     res.status(200).send(chat);
+  } catch (error) {
+    console.log(error);
+    next();
+  }
+});
+
+// GET single chat
+chatRouter.get("/:id", jwtAuthMiddleware, async (req, res, next) => {
+  try {
+    const chat = await chatModel.findById(req.params.id);
+    const isMyChat = chat.members.includes(req.user._id);
+    if (chat && isMyChat) {
+      res.status(200).send(chat);
+    } else {
+      res.send(`${req.params.id} doesn't exist and/or doesn't belong to you`);
+    }
   } catch (error) {
     console.log(error);
     next();
