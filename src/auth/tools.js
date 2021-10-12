@@ -37,6 +37,16 @@ export const verifyToken = (token) =>
       resolve(decodedToken);
     })
   );
+
+  //vertify refresh token
+
+  const verifyRefreshToken = token =>
+  new Promise((resolve, reject) =>
+    jwt.verify(token, process.env.REFRESH_TOKEN, (err, decodedToken) => {
+      if (err) reject(err)
+      resolve(decodedToken)
+    })
+  )
 // token authentication
 export const jwtAuthentication = async (user) => {
   const accessToken = await newToken({ _id: user._id });
@@ -48,10 +58,12 @@ export const jwtAuthentication = async (user) => {
 //verify refresh token
 export const refreshTokenAuth = async (refresh) => {
   try {
-    const decodedRefresh = await verifyToken(refresh);
+    const decodedRefresh = await verifyRefreshToken(refresh);
+    console.log(decodedRefresh)
     const user = await userModel.findById(decodedRefresh._id);
+    console.log(user)
     if (!user) throw new Error("User Not Found! R.T");
-    if (user.refreshToken === refresh) {
+    if (user.refreshT === refresh) {
       const { accessToken, refreshToken } =await jwtAuthentication(user);
       return { accessToken, refreshToken };
     }
@@ -60,18 +72,3 @@ export const refreshTokenAuth = async (refresh) => {
   }
 };
 
-/* export const refreshTokens = async actualRefreshToken => {
-
-  const decodedRefreshToken = await verifyRefreshJWT(actualRefreshToken)
-  const user = await UserModel.findById(decodedRefreshToken._id)
-
-  if (!user) throw new Error("User not found!")
-
-  if (user.refreshToken === actualRefreshToken) {
-    const { accessToken, refreshToken } = await generatePairOfTokens(user)
-    return { accessToken, refreshToken }
-  } else {
-    throw createHttpError(401, "Refresh Token not valid!")
-  }
-}
- */

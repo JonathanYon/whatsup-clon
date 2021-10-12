@@ -72,7 +72,9 @@ userRouter.get("/:id", jwtAuthMiddleware, async (req, res, next) => {
 
 userRouter.post("/refreshToken", async (req, res, next) => {
   try {
-    const currentRefreshToken  = req.body
+    console.log(req.body)
+    const {currentRefreshToken}  = req.body
+    console.log(currentRefreshToken)
     const { accessToken, refreshToken } = await refreshTokenAuth(currentRefreshToken)
 
     res.send({ accessToken, refreshToken })
