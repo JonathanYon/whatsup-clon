@@ -2,7 +2,7 @@ import express from "express";
 import cors from "cors";
 import listEndpoints from "express-list-endpoints";
 import mongoose from "mongoose";
-import userRouter from "./users/index.js";
+import userRouter from "./services/users/index.js";
 
 const server = express();
 const port = process.env.PORT || 3001;
