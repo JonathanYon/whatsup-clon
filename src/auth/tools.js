@@ -8,14 +8,14 @@ const newToken = (payload) =>
     jwt.sign(
       payload,
       process.env.ACCESS_TOKEN,
-      { expiresIn: "1s" },
+      { expiresIn: "1d" },
       (err, token) => {
         if (err) reject(err);
         resolve(token);
       }
     )
   );
-
+  
 // refresh token
 const newRefreshToken = (payload) =>
   new Promise((resolve, reject) =>

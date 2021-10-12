@@ -84,4 +84,14 @@ userRouter.post("/refreshToken", async (req, res, next) => {
 } 
 )
 
+userRouter.delete("/logout",jwtAuthMiddleware, async(req,res,next)=>{
+  try {
+    req.user.refreshT=null
+    await req.user.save()
+    res.send()
+  } catch (error) {
+    next(error)
+  }
+})
+
 export default userRouter;
