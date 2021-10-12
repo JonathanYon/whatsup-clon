@@ -3,6 +3,7 @@ import userModel from "./schema.js";
 import { jwtAuthMiddleware } from "../../auth/token.js";
 import { jwtAuthentication } from "../../auth/tools.js";
 import createHttpError from "http-errors";
+import passport from "passport";
 
 const userRouter = Router();
 
@@ -17,6 +18,35 @@ userRouter.post("/account", async (req, res, next) => {
     next(error);
   }
 });
+// login using google
+userRouter.get(
+  "/googleLogin",
+  passport.authenticate("google", { scope: ["profile", "email"] })
+);
+userRouter.get(
+  "/googleRedirect",
+  passport.authenticate("google"),
+  async (req, res, next) => {
+    try {
+      res.cookie(`accessToken`, req.user.tokens.accessToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production" ? true : false,
+        sameSite: process.env.NODE_ENV === "production" ? "strict" : "none",
+      }); //either from the cookies or the url
+      res.cookie(`refreshToken`, req.user.tokens.refreshToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production" ? true : false,
+        sameSite: process.env.NODE_ENV === "production" ? "strict" : "none",
+      }); // withCredential: true in the FE
+      res.redirect(
+        `${process.env.API_URL}:${process.env.PORT}` //?accessToken=${req.user.tokens.accessToken}&refreshToken=${req.user.tokens.refreshToken}
+      );
+    } catch (error) {
+      console.log(error);
+      next(error);
+    }
+  }
+);
 // login (session)
 userRouter.post("/login", async (req, res, next) => {
   try {
