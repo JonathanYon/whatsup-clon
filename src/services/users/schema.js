@@ -12,9 +12,17 @@ const UsersSchema = new Schema(
       required: false,
       default: "https://bit.ly/3lBk8d3",
     },
-    password: { type: String, required: false },
+    password: {
+      type: String,
+      required: function () {
+        if (this.googleId !== null || this.facebookId !== null) {
+          return;
+        }
+      },
+    },
     refreshT: { type: String },
     googleId: { type: String },
+    facebookId: { type: String },
   },
 
   { timestamps: true }
