@@ -47,6 +47,28 @@ userRouter.get(
     }
   }
 );
+//FB
+userRouter.get(
+  "/auth/facebook",
+  passport.authenticate("facebook", { scope: ["email"] })
+); //this will be used for login route and we are going to send our users to this route to login
+//after successfully logged in facebook will redirect to below routes
+userRouter.get(
+  "/auth/facebook/secrets",
+  passport.authenticate("facebook"),
+  async (req, res, next) => {
+    try {
+      console.log("redirect");
+      console.log(req.user.token);
+      res.cookie("token", req.user.token, {
+        //httpOnly: true,
+      });
+      res.redirect(`${process.env.API_URL}:${process.env.PORT}`);
+    } catch (error) {
+      next(error);
+    }
+  }
+);
 // login (session)
 userRouter.post("/login", async (req, res, next) => {
   try {
