@@ -1,7 +1,7 @@
 import { Router } from "express";
 import userModel from "./schema.js";
-import { jwtAuthMiddleware } from "../auth/token.js";
-import { jwtAuthentication } from "../auth/tools.js";
+import { jwtAuthMiddleware } from "../../auth/token.js";
+import { jwtAuthentication, refreshTokenAuth} from "../../auth/tools.js";
 import createHttpError from "http-errors";
 
 const userRouter = Router();
@@ -11,7 +11,9 @@ userRouter.post("/account", async (req, res, next) => {
   try {
     const newUser = await userModel(req.body);
     const { _id } = await newUser.save();
-    res.status(201).send(_id);
+    const { accessToken, refreshToken } = await jwtAuthentication(newUser)
+
+    res.status(201).send({ accessToken, refreshToken })
   } catch (error) {
     console.log(error);
     next(error);
@@ -67,5 +69,17 @@ userRouter.get("/:id", jwtAuthMiddleware, async (req, res, next) => {
     console.log(error);
   }
 });
+
+userRouter.post("/refreshToken", async (req, res, next) => {
+  try {
+    const currentRefreshToken  = req.body
+    const { accessToken, refreshToken } = await refreshTokenAuth(currentRefreshToken)
+
+    res.send({ accessToken, refreshToken })
+  } catch (error) {
+    next(error)
+  }
+} 
+)
 
 export default userRouter;

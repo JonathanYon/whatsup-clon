@@ -2,9 +2,10 @@ import mongoose from 'mongoose'
 
 const {Schema, model} = mongoose
 
-const MessageSchema = new Schema(
+export const MessageSchema = new Schema(
     {
-        sender: { type: String, required: true },
+        sender: { type: Schema.Types.ObjectId,ref: "User",required: true, },
+        owner: { type: mongoose.Types.ObjectId, ref: "User", required: true },
         content: {
             text: { type: String, required: true },
             media: { type: String, required: true },
@@ -15,4 +16,4 @@ const MessageSchema = new Schema(
     }
 )
 
-export default model("Message", MessageSchema)
+/* export default model("Message", MessageSchema) */

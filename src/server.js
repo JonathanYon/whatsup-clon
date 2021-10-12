@@ -13,7 +13,7 @@ console.log("process---", process.env.MONGOS_CON);
 server.use(cors());
 server.use(express.json());
 
-server.use("users",userRouter)
+server.use("/users",userRouter)
 server.use("/chats",chatRouter)
 
 console.log(listEndpoints(server));
