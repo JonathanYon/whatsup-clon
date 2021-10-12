@@ -3,6 +3,9 @@ import userModel from "./schema.js";
 import { jwtAuthMiddleware } from "../../auth/token.js";
 import { jwtAuthentication, refreshTokenAuth} from "../../auth/tools.js";
 import createHttpError from "http-errors";
+import multer from "multer"
+import { v2 as cloudinary } from "cloudinary";
+import { CloudinaryStorage } from "multer-storage-cloudinary";
 
 const userRouter = Router();
 
@@ -90,6 +93,42 @@ userRouter.delete("/logout",jwtAuthMiddleware, async(req,res,next)=>{
     await req.user.save()
     res.send()
   } catch (error) {
+    next(error)
+  }
+})
+
+cloudinary.config({
+  cloud_name: process.env.CLOUD_NAME,
+  api_key: process.env.API_KEY,
+  api_secret: process.env.API_SECRET,
+});
+const storage = new CloudinaryStorage({
+  cloudinary,
+  params: {
+    folder: "files",
+  },
+});
+
+
+userRouter.post("/me/avatar", multer({ storage: storage}).single("avatar"),jwtAuthMiddleware,  async(req, res, next) => {
+   console.log(req.file)
+  try {
+      console.log("id",JSON.stringify(req.params.id))
+      const modifiedUser = await userModel.findByIdAndUpdate(
+        req.user.id,
+        {  avatar: req.file?.path  },
+        { new: true }
+      )
+      if (modifiedUser) {
+        res.send(modifiedUser)
+      } else {
+        next(createError(404, "user Not Found!"))
+      }
+    
+    
+      
+  } catch (error) {
+      console.log("error",error)
     next(error)
   }
 })
