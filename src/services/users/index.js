@@ -6,7 +6,7 @@ import createHttpError from "http-errors";
 import multer from "multer"
 import { v2 as cloudinary } from "cloudinary";
 import { CloudinaryStorage } from "multer-storage-cloudinary";
-import { usersValidationMiddleware } from "./validations"
+import { usersValidationMiddleware } from "./validation.js"
 
 const userRouter = Router();
 
@@ -22,9 +22,7 @@ userRouter.post("/account",usersValidationMiddleware, async (req, res, next) => 
 
       const newUser = await userModel(req.body);
     const { _id } = await newUser.save();
-    const { accessToken, refreshToken } = await jwtAuthentication(newUser)
-
-    res.status(201).send({ accessToken, refreshToken })
+    
     }
     
   } catch (error) {
@@ -96,7 +94,7 @@ userRouter.put("/me", jwtAuthMiddleware, async (req, res, next) => {
   }
 });
 // get single user
-/* userRouter.get("/:id", jwtAuthMiddleware, async (req, res, next) => {
+userRouter.get("/:id", jwtAuthMiddleware, async (req, res, next) => {
   try {
     const user = await userModel.findById({ _id: req.params.id });
     if (user) {
@@ -107,7 +105,7 @@ userRouter.put("/me", jwtAuthMiddleware, async (req, res, next) => {
   } catch (error) {
     console.log(error);
   }
-}); */
+});
 
 //generate a new refresh token
 userRouter.post("/refreshToken", async (req, res, next) => {
