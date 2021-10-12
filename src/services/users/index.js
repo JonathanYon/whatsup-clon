@@ -38,6 +38,32 @@ userRouter.post("/login", async (req, res, next) => {
     next(createHttpError(401, "Check your login details"));
   }
 });
+//searches user by email or password
+userRouter.get("/", jwtAuthMiddleware, async (req, res, next) => {
+  try {
+    console.log(req.query.name)
+const users=await userModel.find()
+
+if(req.query && req.query.name)
+{
+  const searchByNameResult=users.filter(u=>u.username===req.query.name)
+  res.send(searchByNameResult)
+}
+else if(req.query && req.query.email)
+{
+  const searchByEmailResult=users.filter(user=>user.email===req.query.email)
+  if(searchByEmailResult)
+  {
+    res.send(searchByEmailResult)
+  }
+}else{
+    res.status(404).send("not found")
+  }
+  } catch (error) {
+    console.log(error);
+  }
+});
+
 // get me
 userRouter.get("/me", jwtAuthMiddleware, async (req, res, next) => {
   try {
@@ -60,7 +86,7 @@ userRouter.put("/me", jwtAuthMiddleware, async (req, res, next) => {
   }
 });
 // get single user
-userRouter.get("/:id", jwtAuthMiddleware, async (req, res, next) => {
+/* userRouter.get("/:id", jwtAuthMiddleware, async (req, res, next) => {
   try {
     const user = await userModel.findById({ _id: req.params.id });
     if (user) {
@@ -71,8 +97,9 @@ userRouter.get("/:id", jwtAuthMiddleware, async (req, res, next) => {
   } catch (error) {
     console.log(error);
   }
-});
+}); */
 
+//generate a new refresh token
 userRouter.post("/refreshToken", async (req, res, next) => {
   try {
     console.log(req.body)
@@ -87,6 +114,7 @@ userRouter.post("/refreshToken", async (req, res, next) => {
 } 
 )
 
+//logouts(session)
 userRouter.delete("/logout",jwtAuthMiddleware, async(req,res,next)=>{
   try {
     req.user.refreshT=null
@@ -109,7 +137,7 @@ const storage = new CloudinaryStorage({
   },
 });
 
-
+//
 userRouter.post("/me/avatar", multer({ storage: storage}).single("avatar"),jwtAuthMiddleware,  async(req, res, next) => {
    console.log(req.file)
   try {
@@ -123,10 +151,7 @@ userRouter.post("/me/avatar", multer({ storage: storage}).single("avatar"),jwtAu
         res.send(modifiedUser)
       } else {
         next(createError(404, "user Not Found!"))
-      }
-    
-    
-      
+      }  
   } catch (error) {
       console.log("error",error)
     next(error)
