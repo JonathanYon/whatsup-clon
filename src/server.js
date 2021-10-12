@@ -4,9 +4,13 @@ import listEndpoints from "express-list-endpoints";
 import mongoose from "mongoose";
 import userRouter from "./services/users/index.js";
 import chatRouter from "./services/chatt/index.js";
+import passport from "passport";
+import googleStrategy from "./auth/oauth.js";
 
 const server = express();
 const port = process.env.PORT || 3001;
+
+passport.use("google", googleStrategy);
 
 console.log("process---", process.env.MONGOS_CON);
 
