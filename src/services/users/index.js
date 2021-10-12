@@ -3,6 +3,7 @@ import userModel from "./schema.js";
 import { jwtAuthMiddleware } from "../../auth/token.js";
 import { jwtAuthentication, refreshTokenAuth } from "../../auth/tools.js";
 import createHttpError from "http-errors";
+import { validationResult } from "express-validator";
 import multer from "multer";
 import cloudinaryStorage from "../../utils/cloudinary.js";
 import { usersValidationMiddleware } from "./validation.js";
@@ -23,6 +24,8 @@ userRouter.post(
       } else {
         const newUser = await userModel(req.body);
         const { _id } = await newUser.save();
+
+        res.status(201).send(_id);
       }
     } catch (error) {
       console.log(error);
