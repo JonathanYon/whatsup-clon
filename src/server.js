@@ -17,7 +17,21 @@ passport.use("facebook", facebookStrategy);
 
 console.log("process---", process.env.MONGOS_CON);
 
-server.use(cors());
+const links = [process.env.FE_DEV_URL, process.env.FE_PRO_URL];
+// const links = ["http://localhost:3000", "http://myapp.com"];
+const corsOpt = {
+  origin: function (origin, next) {
+    if (!origin || links.indexOf(origin) !== -1) {
+      next(null, true);
+      console.log("origin:", origin);
+      console.log(port);
+    } else {
+      next(new Error(`origin  ${origin} NOT found!`));
+    }
+  },
+};
+
+server.use(cors(corsOpt));
 server.use(express.json());
 // server.use(cookieParser()); //if we decide to use this the token.js has to be refactored
 server.use(passport.initialize());
