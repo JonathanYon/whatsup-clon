@@ -6,6 +6,7 @@ import userRouter from "./services/users/index.js";
 import chatRouter from "./services/chatt/index.js";
 import passport from "passport";
 import googleStrategy from "./auth/oauth.js";
+// import cookieParser from "cookie-parser";
 
 const server = express();
 const port = process.env.PORT || 3001;
@@ -16,6 +17,8 @@ console.log("process---", process.env.MONGOS_CON);
 
 server.use(cors());
 server.use(express.json());
+// server.use(cookieParser()); //if we decide to use this the token.js has to be refactored
+server.use(passport.initialize());
 
 server.use("/users", userRouter);
 server.use("/chats", chatRouter);
