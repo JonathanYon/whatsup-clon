@@ -1,7 +1,7 @@
 import passport from "passport";
 import FacebookStrategy from "passport-facebook";
 import userModel from "../services/users/schema.js";
-// import { JWTAuthenticate } from "./tools.js";
+import { jwtAuthentication } from "./tools.js";
 import jwt from "jsonwebtoken";
 
 const facebookStrategy = new FacebookStrategy(
@@ -24,16 +24,17 @@ const facebookStrategy = new FacebookStrategy(
       const user = await userModel.findOne({ facebookId: profile.id });
       console.log(user);
       if (user) {
-        // const tokens = await JWTAuthenticate(user);
-        const token = jwt.sign(
-          {
-            id: user._id,
-          },
-          process.env.JWT_SECRET,
-          {
-            expiresIn: "1 week",
-          }
-        );
+        const token = await jwtAuthentication(user);
+
+        // const token = jwt.sign(
+        //   {
+        //     id: user._id,
+        //   },
+        //   process.env.JWT_SECRET,
+        //   {
+        //     expiresIn: "1 week",
+        //   }
+        // );
 
         cb(null, { token });
       } else {
@@ -46,17 +47,17 @@ const facebookStrategy = new FacebookStrategy(
         };
         const createdUser = new userModel(newUser);
         const savedUser = await createdUser.save();
+        const token = await jwtAuthentication(savedUser);
 
-        // const tokens = await JWTAuthenticate(savedUser);
-        const token = jwt.sign(
-          {
-            id: savedUser._id,
-          },
-          process.env.JWT_SECRET,
-          {
-            expiresIn: "1 week",
-          }
-        );
+        // const token = jwt.sign(
+        //   {
+        //     id: savedUser._id,
+        //   },
+        //   process.env.JWT_SECRET,
+        //   {
+        //     expiresIn: "1 week",
+        //   }
+        // );
 
         cb(null, { user: savedUser, token });
       }
