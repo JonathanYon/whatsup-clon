@@ -6,17 +6,27 @@ import createHttpError from "http-errors";
 import multer from "multer"
 import { v2 as cloudinary } from "cloudinary";
 import { CloudinaryStorage } from "multer-storage-cloudinary";
+import { usersValidationMiddleware } from "./validations"
 
 const userRouter = Router();
 
 // register with token
-userRouter.post("/account", async (req, res, next) => {
+userRouter.post("/account",usersValidationMiddleware, async (req, res, next) => {
   try {
-    const newUser = await userModel(req.body);
+    const errorsList = validationResult(req)
+
+    if (!errorsList.isEmpty()) {
+
+        next(createHttpError(400, { errorsList }))
+    } else {
+
+      const newUser = await userModel(req.body);
     const { _id } = await newUser.save();
     const { accessToken, refreshToken } = await jwtAuthentication(newUser)
 
     res.status(201).send({ accessToken, refreshToken })
+    }
+    
   } catch (error) {
     console.log(error);
     next(error);
@@ -41,13 +51,13 @@ userRouter.post("/login", async (req, res, next) => {
 //searches user by email or password
 userRouter.get("/", jwtAuthMiddleware, async (req, res, next) => {
   try {
-    console.log(req.query.name)
 const users=await userModel.find()
-
 if(req.query && req.query.name)
 {
   const searchByNameResult=users.filter(u=>u.username===req.query.name)
+ if(searchByNameResult){
   res.send(searchByNameResult)
+ }
 }
 else if(req.query && req.query.email)
 {
