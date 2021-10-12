@@ -4,8 +4,7 @@ import { jwtAuthMiddleware } from "../../auth/token.js";
 import { jwtAuthentication, refreshTokenAuth } from "../../auth/tools.js";
 import createHttpError from "http-errors";
 import multer from "multer";
-import { v2 as cloudinary } from "cloudinary";
-import { CloudinaryStorage } from "multer-storage-cloudinary";
+import cloudinaryStorage from "../../utils/cloudinary.js";
 import { usersValidationMiddleware } from "./validation.js";
 import passport from "passport";
 
@@ -186,22 +185,9 @@ userRouter.delete("/logout", jwtAuthMiddleware, async (req, res, next) => {
   }
 });
 
-cloudinary.config({
-  cloud_name: process.env.CLOUD_NAME,
-  api_key: process.env.API_KEY,
-  api_secret: process.env.API_SECRET,
-});
-const storage = new CloudinaryStorage({
-  cloudinary,
-  params: {
-    folder: "files",
-  },
-});
-
-//
 userRouter.post(
   "/me/avatar",
-  multer({ storage: storage }).single("avatar"),
+  multer({ storage: cloudinaryStorage }).single("avatar"),
   jwtAuthMiddleware,
   async (req, res, next) => {
     console.log(req.file);
