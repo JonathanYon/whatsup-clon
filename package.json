@@ -3,8 +3,11 @@
   "version": "1.0.0",
   "description": "MERN stack",
   "main": "index.js",
+  "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon -r dotenv/config ./src/server.js",
+    "start": "node ./src/server.js"
   },
   "repository": {
     "type": "git",
@@ -20,12 +23,20 @@
   "dependencies": {
     "atob": "^2.1.2",
     "bcrypt": "^5.0.1",
+    "cloudinary": "^1.27.1",
+    "cookie-parser": "^1.4.5",
     "cors": "^2.8.5",
     "express": "^4.17.1",
     "express-list-endpoints": "^6.0.0",
+    "express-validator": "^6.13.0",
     "http-errors": "^1.8.0",
     "jsonwebtoken": "^8.5.1",
-    "mongoose": "^6.0.10"
+    "mongoose": "^6.0.10",
+    "multer": "^1.4.3",
+    "multer-storage-cloudinary": "^4.0.0",
+    "passport": "^0.5.0",
+    "passport-facebook": "^3.0.0",
+    "passport-google-oauth20": "^2.0.0"
   },
   "devDependencies": {
     "dotenv": "^10.0.0",
