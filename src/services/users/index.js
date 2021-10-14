@@ -104,24 +104,24 @@ userRouter.post("/login", async (req, res, next) => {
 userRouter.get("/", jwtAuthMiddleware, async (req, res, next) => {
   try {
     const users = await userModel.find();
-    res.send(users);
-    // if (req.query && req.query.name) {
-    //   const searchByNameResult = users.filter(
-    //     (u) => u.username === req.query.name
-    //   );
-    //   if (searchByNameResult) {
-    //     res.send(searchByNameResult);
-    //   }
-    // } else if (req.query && req.query.email) {
-    //   const searchByEmailResult = users.filter(
-    //     (user) => user.email === req.query.email
-    //   );
-    //   if (searchByEmailResult) {
-    //     res.send(searchByEmailResult);
-    //   }
-    // } else {
-    //   res.status(404).send("not found");
-    // }
+
+    if (req.query && req.query.name) {
+      const searchByNameResult = users.filter(
+        (u) => u.username === req.query.name
+      );
+      if (searchByNameResult) {
+        res.send(searchByNameResult);
+      }
+    } else if (req.query && req.query.email) {
+      const searchByEmailResult = users.filter(
+        (user) => user.email === req.query.email
+      );
+      if (searchByEmailResult) {
+        res.send(searchByEmailResult);
+      }
+    } else {
+      res.status(404).send("not found");
+    }
   } catch (error) {
     console.log(error);
   }
