@@ -2,8 +2,10 @@ import { Server } from "socket.io";
 import { createServer } from "http";
 import listEndpoints from "express-list-endpoints";
 import chatModel from "../services/chatt/schema.js";
+import { verifyToken } from "../auth/tools.js";
 
 let users = [];
+
 const addUser = (userId, socketId) => {
   !users.some((user) => user.userId === userId) &&
     users.push({ userId: socketId });
@@ -25,15 +27,21 @@ export const connectSocket = (server) => {
       );
     });
 
-    io.on("connection", (socket) => {
-      console.log("a user is connected");
+    io.use((socket, next) => {
+      if (!socket.request.headers.authorization) {
+        console.log("unauthorized user establishing a connection...");
+        socket.emit("JWT_ERROR");
+      } else next();
+    });
 
-      // listening to did-connect
-      // on did-connect, payload is userid
-      // sockets[userid] = socket
-      socket.on("did-connect", (payload) => {
-        console.log(payload);
-      });
+    io.on("connection", async (socket) => {
+      // console.log(socket.request.headers.authorization);
+      const { _id: userId } = await verifyToken(
+        socket.request.headers.authorization
+      );
+
+      console.log("a user is connected with id: " + userId);
+      sockets[userId] = socket;
 
       //getting userId and socketId
       socket.on("addUser", (userId) => {
@@ -41,17 +49,6 @@ export const connectSocket = (server) => {
         io.emit("getUser", users);
       });
 
-      socket.on("newRoom", async (users) => {
-        try {
-          console.log(users);
-          const newChat = await chatModel({ members: users }).save();
-          const chatRoom = newChat._id;
-          socket.join(chatRoom);
-          socket.emit("joinRoom", newChat);
-        } catch (error) {
-          console.log(error);
-        }
-      });
       socket.on("outgoing-msg", async ({ userId, chatId, text, media }) => {
         try {
           const theMessage = {
