@@ -108,6 +108,9 @@ userRouter.get("/", jwtAuthMiddleware, async (req, res, next) => {
       if (searchByNameResult) {
         res.send(searchByNameResult);
       }
+      else {
+        res.status(404).send("not found");
+      }
     } else if (req.query && req.query.email) {
       const searchByEmailResult = users.filter(
         (user) => user.email === req.query.email
@@ -115,8 +118,11 @@ userRouter.get("/", jwtAuthMiddleware, async (req, res, next) => {
       if (searchByEmailResult) {
         res.send(searchByEmailResult);
       }
+      else {
+        res.status(404).send("not found");
+      }
     } else {
-      res.status(404).send("not found");
+      res.status(404).send(users);
     }
   } catch (error) {
     console.log(error);
