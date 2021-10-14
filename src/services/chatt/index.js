@@ -23,9 +23,14 @@ chatRouter.post("/", jwtAuthMiddleware, async (req, res, next) => {
 // GET all my chat
 chatRouter.get("/", jwtAuthMiddleware, async (req, res, next) => {
   try {
-    const chat = await chatModel.find({
-      members: req.user._id.toString(),
-    });
+    const chat = await chatModel
+      .find({
+        members: req.user._id.toString(),
+      })
+      .populate({
+        path: "members",
+        select: "-refreshT -__v -createdAt -updatedAt",
+      });
     res.status(200).send(chat);
   } catch (error) {
     console.log(error);
