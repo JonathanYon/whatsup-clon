@@ -121,7 +121,7 @@ userRouter.get("/", jwtAuthMiddleware, async (req, res, next) => {
         res.send(searchByEmailResult);
       }
       else {
-        next(createHttpError(404, "user Not Found!"));
+        next(createHttpError(404, "email Not Found!"));
       }
     } else {
       res.status(200).send(users);
