@@ -7,6 +7,8 @@ import multer from "multer";
 import cloudinaryStorage from "../../utils/cloudinary.js";
 import { usersValidationMiddleware } from "./validation.js";
 import passport from "passport";
+import { validationResult } from "express-validator"
+
 
 const userRouter = Router();
 
@@ -105,27 +107,28 @@ userRouter.get("/", jwtAuthMiddleware, async (req, res, next) => {
       const searchByNameResult = users.filter(
         (u) => u.username === req.query.name
       );
-      if (searchByNameResult) {
+      if (searchByNameResult&&searchByNameResult.length!==0) {
         res.send(searchByNameResult);
       }
       else {
-        res.status(404).send("not found");
+        next(createHttpError(404, "user Not Found!"));
       }
     } else if (req.query && req.query.email) {
       const searchByEmailResult = users.filter(
         (user) => user.email === req.query.email
       );
-      if (searchByEmailResult) {
+      if (searchByEmailResult&&searchByEmailResult.length!==0) {
         res.send(searchByEmailResult);
       }
       else {
-        res.status(404).send("not found");
+        next(createHttpError(404, "user Not Found!"));
       }
     } else {
-      res.status(404).send(users);
+      res.status(200).send(users);
     }
   } catch (error) {
     console.log(error);
+    next(error);
   }
 });
 
@@ -135,6 +138,7 @@ userRouter.get("/me", jwtAuthMiddleware, async (req, res, next) => {
     res.send(req.user);
   } catch (error) {
     console.log(error);
+    next(error);
   }
 });
 // change me
@@ -148,6 +152,7 @@ userRouter.put("/me", jwtAuthMiddleware, async (req, res, next) => {
     res.send(user);
   } catch (error) {
     console.log(error);
+    next(error);
   }
 });
 // get single user
@@ -157,10 +162,11 @@ userRouter.get("/:id", jwtAuthMiddleware, async (req, res, next) => {
     if (user) {
       res.send(user);
     } else {
-      res.send("the pserson you looking for is not found");
+      next(createHttpError(404, "user Not Found!"));
     }
   } catch (error) {
     console.log(error);
+    next(error);
   }
 });
 
@@ -207,7 +213,7 @@ userRouter.post(
       if (modifiedUser) {
         res.send(modifiedUser);
       } else {
-        next(createError(404, "user Not Found!"));
+        next(createHttpError(404, "user Not Found!"));
       }
     } catch (error) {
       console.log("error", error);
