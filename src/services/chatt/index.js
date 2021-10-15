@@ -41,9 +41,13 @@ chatRouter.get("/", jwtAuthMiddleware, async (req, res, next) => {
 // GET single chat
 chatRouter.get("/:id", jwtAuthMiddleware, async (req, res, next) => {
   try {
-    const chat = await chatModel.findById(req.params.id);
-    const isMyChat = chat.members.includes(req.user._id);
-    if (chat && isMyChat) {
+    const chat = await chatModel.findById(req.params.id).populate({
+      path: "members",
+      select: "-refreshT -__v -createdAt -updatedAt",
+    });
+    // const isMyChat = chat.members.find((id) => id._id === req.user._id);
+    // console.log("ismatch", isMyChat);
+    if (chat) {
       res.status(200).send(chat);
     } else {
       res.send(`${req.params.id} doesn't exist and/or doesn't belong to you`);
